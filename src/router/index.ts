@@ -1,25 +1,74 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import Home from '../views/Home.vue'
+import { 
+  createRouter, 
+  // createWebHashHistory,
+  createWebHistory,
+  RouteRecordRaw 
+} from 'vue-router';
+import Login from '../views/Login.vue';
+import Home from '../views/Home.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: { name: 'home' }
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
-]
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    redirect: '/dashboard',
+    component: Home,
+    children: [
+      {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('../views/Dashboard.vue'),
+        meta: {
+          title: '儀錶板',
+          isShow: true,
+          icon: 'fa-solid fa-border-all',
+          index: 1
+        }
+      },
+      {
+        path: 'order',
+        name: 'Order',
+        component: () => import('../views/Order.vue'),
+        meta: {
+          title: '訂單',
+          isShow: true,
+          icon: 'fa-solid fa-cart-shopping',
+          index: 2
+        }
+      },
+      {
+        path: 'user',
+        name: 'User',
+        component: () => import('../views/User.vue'),
+        meta: {
+          title: '使用者',
+          isShow: true,
+          icon: 'fa-solid fa-user',
+          index: 3
+        }
+      },
+    ]
+  },
+  {
+    path: '/404',
+    name: 'Page404',
+    component: () => import('../views/Page404.vue')
+  },
+];
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes
-})
+  // history: createWebHashHistory(),
+  history: createWebHistory(),
+  routes,
+});
 
-export default router
+export default router;
