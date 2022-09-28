@@ -41,6 +41,7 @@
       element-loading-svg-view-box="-10, -10, 50, 50" 
       element-loading-background="#2a598a70"
     >
+      <h3>Stackoverflow 2021 最熱門 應用最多 排行</h3>
       <div class="chart" ref="chartRef" ></div>
     </div>
   </div>
@@ -49,6 +50,7 @@
 import { defineComponent, onMounted } from 'vue'
 import { ref } from 'vue'
 import { echarts } from '@/lib/echarts'
+import { fakeData as popularList } from '@/fakeData/fakeData_dashboard'
 
 export default defineComponent({
   setup() {
@@ -67,7 +69,7 @@ export default defineComponent({
         page: 'Dashboard',
         pageName: '儀表版',
         date: '2022-09-27',
-        percent: 52
+        percent: 90
       },
       {
         page: 'Order',
@@ -103,19 +105,31 @@ export default defineComponent({
     const chartRef = ref(null)
     const option = {
       xAxis: {
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        data: popularList.map(item => {
+          return item.language
+        })
       },
-      yAxis: {},
+      yAxis: {
+        type: 'value',
+        name: '使用與熱門占比',
+        min: 0,
+        max: 80,
+        position: 'left',
+        axisLabel: {
+          formatter: '{value} %'
+        }
+      },
       series: [
         {
           type: 'bar',
-          data: [23, 24, 18, 25, 27, 28, 25]
+          data: popularList.map(item => {
+            return item.percent
+          })
         }
       ]
     }
 
     onMounted(() => {
-      console.log(chartRef)
       if (chartRef.value !== null) {
         const myChart = echarts.init((chartRef.value as unknown as HTMLElement))
         myChart.setOption(option)
@@ -171,6 +185,7 @@ export default defineComponent({
 
   &-chart {
     overflow: auto;
+    padding: 4px 32px;
     background-color: #ffffff;
 
     .chart {
