@@ -1,5 +1,5 @@
 <template>
-  <div class="header-container">
+  <div class="header-container card-shadow">
     <Hamburger v-model:isOpen="tempIsOpen" class="header-hamburger" />
 
     <div class="header-list">

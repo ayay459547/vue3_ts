@@ -66,6 +66,11 @@ export default defineComponent({
   &-main {
     height: 100%;
     background-color: #ededed;
+    overflow: auto;
+
+    &::v-deep .el-main {
+      padding: 0;
+    }
   }
 }
 </style>

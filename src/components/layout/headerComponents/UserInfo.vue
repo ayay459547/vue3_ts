@@ -33,10 +33,9 @@ const logout = (): void => {
 
 .user {
   &-container {
-    width: 57px;
-    height: 57px;
-    padding: 1px;
-    
+    width: 58px;
+    height: 58px;
+
     @extend %center;
     margin-left: 16px;
     border-radius: 6px;
