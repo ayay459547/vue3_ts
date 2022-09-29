@@ -10,7 +10,7 @@ import Home from '../views/Home.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: { name: 'home' }
+    redirect: { name: 'Login' }
   },
   {
     path: '/login',
@@ -35,13 +35,13 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
-        path: 'order',
-        name: 'Order',
-        component: () => import('../views/Order.vue'),
+        path: 'table',
+        name: 'Table',
+        component: () => import('../views/Table.vue'),
         meta: {
-          title: '訂單',
+          title: '表單',
           isShow: true,
-          icon: 'fa-solid fa-cart-shopping',
+          icon: 'fa-solid fa-rectangle-list',
           index: 2
         }
       },

@@ -31,9 +31,10 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import type { FormInstance, FormRules } from 'element-plus'
 
+import type { FormInstance, FormRules } from 'element-plus'
 import { FormInterface, InitData, TipType } from '@/types/login'
+
 import { getLoginData } from '@/api/api_login'
 import { fakeData, FakeDataType } from '@/fakeData/fakeData_login'
 
