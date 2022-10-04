@@ -20,20 +20,19 @@
       </el-form>
     </TableFilter>
 
-    <div ref="tableMain" class="table-main">
-      <el-table :data="tableData" :height="tableHeight" style="width: 100%">
-        <el-table-column 
-          v-for="column in tableColumn" 
-          :key="column.prop"
-          v-bind="column"
-        />
-      </el-table>
+    <div class="table-main">
+      <TableMain 
+        :table-column="tableColumn"
+        :table-data="tableData"
+        :loading="loading"
+      />
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, reactive, toRefs } from 'vue'
 import TableFilter from '@/components/feature/TableFilter.vue'
+import TableMain from '@/components/feature/TableMain.vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 import { FormInterface, InitData, TipType } from '@/types/table'
@@ -41,11 +40,10 @@ import { FormInterface, InitData, TipType } from '@/types/table'
 import { getTableData } from '@/api/api_table'
 import { fakeData, FakeDataInterface } from '@/fakeData/fakeData_table'
 
-import { throttle } from '@/lib/throttle'
-
 export default defineComponent({
   components: {
-    TableFilter
+    TableFilter,
+    TableMain
   },
   setup () {
     // filter
@@ -92,6 +90,7 @@ export default defineComponent({
 
 
     // table
+    let loading = ref(true)
     const tableColumn = {
       name: {
         prop: 'name',
@@ -108,7 +107,7 @@ export default defineComponent({
         label: '詳細資料'
       }
     }
-    let tableData: Array<FakeDataInterface> = reactive([])
+    let tableData: Array<FakeDataInterface> = []
     const initTableData = () => {
       getTableData<Array<FakeDataInterface>>({
         url: '/posts',
@@ -116,29 +115,13 @@ export default defineComponent({
         data: filterForm
       }, fakeData, false).then(({ data }) => {
         tableData.push(...data)
+
+        setTimeout(() => {
+          loading.value = false
+        }, 1000)
       })
     }
     initTableData()
-
-    // table 高度
-    let tableHeight = ref(500)
-
-    const ROcallback = throttle((entries) => {
-      entries.forEach((entry) => {
-        tableHeight.value = entry.contentRect.height - 10
-      })
-    }, 200)
-
-    const RO = new ResizeObserver(ROcallback)
-    const tableMain = ref(null)
-    onMounted(() => {
-      if (tableMain.value !== null) {
-        RO.observe(tableMain.value)
-      }
-    })
-    onUnmounted(() => {
-      RO.disconnect()
-    })
 
     return {
       ...toRefs(baseData),
@@ -148,10 +131,9 @@ export default defineComponent({
       reset,
       setFilterData,
       // table
-      tableMain,
+      loading,
       tableColumn,
-      tableData,
-      tableHeight
+      tableData
     }
   }
 })
