@@ -1,6 +1,11 @@
 <template>
   <div class="table-wrapper">
-    <TableFilter class="table-filter" :filterStr="'123654'" @clear="reset" @submit="setFilterData">
+    <TableFilter 
+      class="table-filter" 
+      :filterStr="filterStr" 
+      @clear="reset" 
+      @submit="setFilterData"
+    >
       <el-form
         ref="filterFormRef"
         :model="filterForm"
@@ -23,14 +28,14 @@
     <div class="table-main">
       <TableMain 
         :table-column="tableColumn"
-        :table-data="tableData"
+        :table-data="showTableData"
         :loading="loading"
       />
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs } from 'vue'
+import { defineComponent, ref, reactive, toRefs, computed } from 'vue'
 import TableFilter from '@/components/feature/TableFilter.vue'
 import TableMain from '@/components/feature/TableMain.vue'
 
@@ -39,6 +44,8 @@ import { FormInterface, InitData, TipType } from '@/types/table'
 
 import { getTableData } from '@/api/api_table'
 import { fakeData, FakeDataInterface } from '@/fakeData/fakeData_table'
+
+import { object_every } from '@/lib/objectFun'
 
 export default defineComponent({
   components: {
@@ -64,34 +71,71 @@ export default defineComponent({
     name: [
       {
         required: false,
-        trigger: 'change',
-      },
+        trigger: 'change'
+      }
     ],
     email: [
       {
         required: false,
-        trigger: 'change',
-      },
+        trigger: 'change'
+      }
     ],
     body: [
       {
         required: false,
-        trigger: 'change',
-      },
+        trigger: 'change'
+      }
     ]
   })
 
+    const filterPropsList = ['name', 'email', 'body']
+    interface filterListInterface {
+      name: (v: string) => boolean
+      email: (v: string) => boolean
+      body: (v: string) => boolean
+    }
+    const defaultFun = (v: string): boolean => {
+      return v.length >= 0
+    }
+    const filterList: filterListInterface = reactive({
+      name: defaultFun,
+      email: defaultFun,
+      body: defaultFun
+    })
     const reset = () => {
-      console.log('reset')
+      filterPropsList.forEach(prop => {
+        filterForm[prop] = ''
+      })
     }
     const setFilterData = () => {
-      console.log('setFilterData')
+      filterPropsList.forEach(prop => {
+        if (filterForm[prop].length > 0) {
+          let s = new RegExp(`${filterForm[prop]}`)
+          filterList[prop] = (v: string): boolean => { return s.test(v) }
+        } else {
+          filterList[prop] = defaultFun
+        }
+      })
     }
+    const filterStr = computed(() => {
+      let res: Array<string> = []
+      filterPropsList.forEach(prop => {
+        if (filterForm[prop].length > 0) {
+          res.push(filterForm[prop])
+        }
+      })
 
+      return res.join(' , ')
+    })
 
     // table
     let loading = ref(true)
     const tableColumn = {
+      id: {
+        prop: 'id',
+        label: '編號',
+        width: '80'
+      },
       name: {
         prop: 'name',
         label: '名稱',
@@ -107,7 +151,7 @@ export default defineComponent({
         label: '詳細資料'
       }
     }
-    let tableData: Array<FakeDataInterface> = []
+    let tableData: Array<FakeDataInterface> = reactive([])
     const initTableData = () => {
       getTableData<Array<FakeDataInterface>>({
         url: '/posts',
@@ -121,6 +165,16 @@ export default defineComponent({
         }, 1000)
       })
     }
+
+    const showTableData = computed(() => {
+      const res = tableData.filter(item => {
+        return object_every(filterList, (callback, props) => {
+          return callback(item[props])
+        })
+      })
+      return res
+    })
+
     initTableData()
 
     return {
@@ -130,7 +184,9 @@ export default defineComponent({
       rules,
       reset,
       setFilterData,
+      filterStr,
       // table
+      showTableData,
       loading,
       tableColumn,
       tableData

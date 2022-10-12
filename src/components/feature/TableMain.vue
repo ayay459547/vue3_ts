@@ -3,7 +3,7 @@
     <div v-if="loading" class="c-pa-md" style="height: 1px;">
       <el-skeleton
         :count="12"
-        :throttle="500"
+        :throttle="100"
         animated
       >
         <template #template>
@@ -14,12 +14,30 @@
       </el-skeleton>
     </div>
     
-    <el-table v-if="!loading" :data="showData" :height="tableHeight" style="width: 100%">
+    <el-table
+      v-if="!loading" 
+      ref="elTableRef"
+      :data="showData" 
+      :height="tableHeight" 
+      style="width: 100%"
+    >
       <el-table-column 
         v-for="column in tableColumn" 
         :key="column.prop"
         v-bind="column"
-      />
+      >
+        <template v-if="hasSlot(`column-${column.prop}`)" #default="scope">
+          <slot 
+            :name="`column-${column.prop}`"
+            :data="{
+              index: scope.$index,
+              row: scope.row,
+              column: scope.column,
+              prop: column.prop
+            }"
+          ></slot>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
   <div class="table-pagination">
@@ -35,8 +53,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, computed, onUpdated, onMounted, onUnmounted } from 'vue'
+import {
+  useSlots,
+  ref,
+  // reactive,
+  defineProps, 
+  computed, 
+  onUpdated, 
+  onMounted, 
+  onUnmounted 
+} from 'vue'
 import { throttle } from '@/lib/throttle'
+
+import type { ElTable } from 'element-plus'
 
 const props = defineProps({
   tableColumn: Object,
@@ -56,6 +85,13 @@ const props = defineProps({
   }
 })
 
+// slot
+const _useSlots = useSlots()
+const hasSlot = (prop: string): boolean => {
+  return !!_useSlots[prop]
+}
+
+// 切換頁
 let total = ref(1)
 onUpdated(() => {
   total.value = props.tableData.length
@@ -63,10 +99,19 @@ onUpdated(() => {
 
 let currentPage = ref(1)
 
-const changePage = (v: number): void => {
-  currentPage.value = v
+const elTableRef = ref<InstanceType<typeof ElTable>>()
+const resetScroll = (): void => {
+  elTableRef.value?.setScrollTop(0)
 }
 
+const changePage = (v: number): void => {
+  currentPage.value = v
+
+  resetScroll()
+  // console.log(elTableRef.value)
+}
+
+// 顯示資料
 const showData = computed(() => {
   const start = (currentPage.value - 1) * props.showDataCount
   const end = start + props.showDataCount
@@ -80,7 +125,7 @@ const ROcallback = throttle((entries) => {
   entries.forEach((entry) => {
     tableHeight.value = entry.contentRect.height - 10
   })
-}, 200)
+}, 100)
 const RO = new ResizeObserver(ROcallback)
 const tableMain = ref(null)
 onMounted(() => {

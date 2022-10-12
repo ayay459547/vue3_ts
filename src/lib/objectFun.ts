@@ -1,6 +1,6 @@
 const hasOwn = Object.prototype.hasOwnProperty
 
-function object_forEach<T> (object: T, callback: (value, key, obj) => void, thisArg: typeof globalThis): T {
+function object_forEach<T> (object: T, callback: (value, key, obj) => void, thisArg?: typeof globalThis): T {
   thisArg = thisArg || window
 
   for (const key in object) {
@@ -12,7 +12,7 @@ function object_forEach<T> (object: T, callback: (value, key, obj) => void, this
   return object
 }
 
-function object_map<T, R> (object: T, callback: (value, key, obj) => void, thisArg: typeof globalThis): R {
+function object_map<T, R> (object: T, callback: (value, key, obj) => void, thisArg?: typeof globalThis): R {
   thisArg = thisArg || window
 
   const resObj = {}
@@ -26,7 +26,7 @@ function object_map<T, R> (object: T, callback: (value, key, obj) => void, thisA
   return (resObj as R)
 }
 
-function object_filter<T, R> (object: T, callback: (value, key, obj) => boolean, thisArg: typeof globalThis): R {
+function object_filter<T, R> (object: T, callback: (value, key, obj) => boolean, thisArg?: typeof globalThis): R {
   thisArg = thisArg || window
 
   const resObj = {}
@@ -40,7 +40,7 @@ function object_filter<T, R> (object: T, callback: (value, key, obj) => boolean,
   return (resObj as R)
 }
 
-function object_some<T> (object: T, callback: (value, key, obj) => boolean, thisArg: typeof globalThis): boolean {
+function object_some<T> (object: T, callback: (value, key, obj) => boolean, thisArg?: typeof globalThis): boolean {
   thisArg = thisArg || window
 
   for (const key in object) {
@@ -52,7 +52,7 @@ function object_some<T> (object: T, callback: (value, key, obj) => boolean, this
   return false
 }
 
-function object_every<T> (object: T, callback: (value, key, obj) => boolean, thisArg: typeof globalThis): boolean {
+function object_every<T> (object: T, callback: (value, key, obj) => boolean, thisArg?: typeof globalThis): boolean {
   thisArg = thisArg || window
 
   for (const key in object) {
@@ -64,12 +64,12 @@ function object_every<T> (object: T, callback: (value, key, obj) => boolean, thi
   return true
 }
 
-function object_reduce<T, R> (object: T, temp: R, callback: (value, key, obj) => R, thisArg: typeof globalThis): R {
+function object_reduce<T, R> (object: T, callback: (temp, value, key, obj) => R, temp: R, thisArg?: typeof globalThis): R {
   thisArg = thisArg || window
 
   for (const key in object) {
     if (hasOwn.call(object, key)) {
-      temp = callback.call(thisArg, object[key], key, object)
+      temp = callback.call(thisArg, temp, object[key], key, object)
     }
   }
 
