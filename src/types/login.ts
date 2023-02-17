@@ -8,8 +8,8 @@ class InitData {
   password
 
   constructor () {
-    this.account = ''
-    this.password =  ''
+    this.account = 'admin'
+    this.password =  'admin'
   }
 }
 

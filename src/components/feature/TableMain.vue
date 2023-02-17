@@ -2,7 +2,7 @@
   <div ref="tableMain" class="table-container">
     <div v-if="loading" class="c-pa-md" style="height: 1px;">
       <el-skeleton
-        :count="12"
+        :count="14"
         :throttle="100"
         animated
       >

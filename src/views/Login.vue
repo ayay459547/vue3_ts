@@ -1,5 +1,10 @@
 <template>
   <div class="login-wrapper">
+    <img 
+      src="~@/assets/login-bg.svg" 
+      alt="login"
+      class="login-img"
+    />
     <el-form
       ref="ruleFormRef"
       :model="ruleForm"
@@ -106,9 +111,16 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     width: 100vw;
     height: 100vh;
 
-    background-image: url('~@/assets/login-bg.jpg');
+    // background-image: url('~@/assets/login-bg.jpg');
+    background-image: linear-gradient(to right, #4fa4be, #f0f0f0);
     position: relative;
     @extend %center;
+  }
+  &-img {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    width: 25%;
   }
 
   &-container {
@@ -125,8 +137,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       @include size(500px, 300px);
       transform: translateX(calc(-50px / 2)) translateY(calc(-50px / 2));
 
-      filter: blur(10px);
-      border-radius: 6px;
+      filter: blur(3px);
+      border-radius: 16px;
       background-color: #ffffffbb;
     }
   }
