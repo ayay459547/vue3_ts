@@ -1,5 +1,10 @@
 # vue3-ts-app
 
+## demo
+https://ayay459547.github.io/vue3_ts/
+
+### 帳號密碼 隨意打即可
+
 ## Project setup
 ```
 npm install
